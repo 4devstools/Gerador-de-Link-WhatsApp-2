@@ -1,108 +1,98 @@
-// Elementos do DOM
+// Seleção dos elementos do DOM
+const generatorScreen = document.getElementById('generator-screen');
+const resultScreen = document.getElementById('result-screen');
 const phoneInput = document.getElementById('phone');
 const messageInput = document.getElementById('message');
 const generateBtn = document.getElementById('generate-btn');
+const generatedLinkInput = document.getElementById('generated-link');
 const copyBtn = document.getElementById('copy-btn');
+const newLinkBtn = document.getElementById('new-link-btn');
 const downloadPngBtn = document.getElementById('download-png');
 const downloadSvgBtn = document.getElementById('download-svg');
-const newLinkBtn = document.getElementById('new-link-btn');
-const generatorScreen = document.getElementById('generator-screen');
-const resultScreen = document.getElementById('result-screen');
-const generatedLinkInput = document.getElementById('generated-link');
 const qrSizeSelect = document.getElementById('qr-size');
 const navbarToggle = document.querySelector('.navbar-toggle');
 const navLinks = document.querySelector('.nav-links');
 
-// Formatação e validação do número de telefone
-phoneInput.addEventListener('keypress', (e) => {
-    // Impede a entrada de caracteres não numéricos
-    if (!/\d/.test(e.key)) {
-        e.preventDefault();
-    }
-    
-    // Obtém o valor atual sem caracteres não numéricos
-    const currentValue = e.target.value.replace(/\D/g, '');
-    
-    // Impede a entrada se exceder 11 dígitos
-    if (currentValue.length >= 11 && e.key !== 'Backspace' && e.key !== 'Delete') {
-        e.preventDefault();
-    }
-});
+// Verifica se a biblioteca QR Code está carregada
+if (typeof qrcode === 'undefined') {
+    console.error('Biblioteca QR Code não carregada');
+}
 
+// Formatação automática do número de telefone
 phoneInput.addEventListener('input', (e) => {
-    // Remove caracteres não numéricos
-    let value = e.target.value.replace(/\D/g, '');
-    
-    // Limita a 11 dígitos
-    value = value.slice(0, 11);
-    
-    // Formata o número
-    let formattedValue = '';
-    if (value.length > 0) {
-        formattedValue = '(' + value.substring(0, 2);
-        if (value.length > 2) {
-            formattedValue += ') ' + value.substring(2, 7);
-            if (value.length > 7) {
-                formattedValue += '-' + value.substring(7, 11);
-            }
+    try {
+        // Remove todos os caracteres não numéricos
+        let value = e.target.value.replace(/\D/g, '');
+        // Limita o número a 11 dígitos
+        if (value.length > 11) value = value.slice(0, 11);
+        
+        // Adiciona formatação (XX) XXXXX-XXXX
+        if (value.length >= 2) {
+            value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
         }
+        if (value.length >= 10) {
+            value = value.slice(0, 10) + '-' + value.slice(10);
+        }
+        
+        e.target.value = value;
+    } catch (error) {
+        console.error('Erro na formatação do número:', error);
     }
-    
-    e.target.value = formattedValue;
-});
-
-// Alternância do menu mobile
-navbarToggle.addEventListener('click', () => {
-    navLinks.classList.toggle('active');
 });
 
 // Geração do link do WhatsApp e QR code
 generateBtn.addEventListener('click', () => {
-    const phone = phoneInput.value.replace(/\D/g, '');
-    if (phone.length !== 11) {
-        alert('Por favor, insira um número de telefone válido com 11 dígitos');
-        return;
+    try {
+        // Remove formatação do número e verifica se é válido
+        const phone = phoneInput.value.replace(/\D/g, '');
+        if (phone.length !== 11) {
+            alert('Por favor, insira um número de telefone válido');
+            return;
+        }
+
+        // Cria o link do WhatsApp com a mensagem (se houver)
+        const message = encodeURIComponent(messageInput.value.trim());
+        const whatsappLink = `https://wa.me/55${phone}${message ? '?text=' + message : ''}`;
+        
+        // Atualiza a interface e gera o QR code
+        generatedLinkInput.value = whatsappLink;
+        generateQRCode(whatsappLink);
+        
+        // Mostra a tela de resultado
+        generatorScreen.classList.add('hidden');
+        resultScreen.classList.remove('hidden');
+    } catch (error) {
+        console.error('Erro ao gerar link:', error);
+        alert('Ocorreu um erro ao gerar o link. Por favor, tente novamente.');
     }
-
-    const message = encodeURIComponent(messageInput.value);
-    const whatsappLink = `https://wa.me/55${phone}${message ? '?text=' + message : ''}`;
-    generatedLinkInput.value = whatsappLink;
-
-    // Gera o QR code
-    generateQRCode(whatsappLink);
-
-    // Mostra a tela de resultado
-    generatorScreen.classList.add('hidden');
-    resultScreen.classList.remove('hidden');
 });
 
 // Função para gerar o QR Code
-function generateQRCode(text) {
-    const qrcodeContainer = document.getElementById('qrcode');
-    qrcodeContainer.innerHTML = '';
+function generateQRCode(url) {
+    try {
+        if (typeof qrcode !== 'function') {
+            throw new Error('Biblioteca QR Code não está disponível');
+        }
 
-    // Configuração do QR Code com densidade aumentada
-    const qr = qrcode(0, 'M'); // Aumenta a densidade usando o nível de correção 'M'
-    qr.addData(text);
-    qr.make();
-
-    const size = parseInt(qrSizeSelect.value);
-    qrcodeContainer.innerHTML = qr.createSvgTag({
-        cellSize: size / 29, // Ajustado para melhor densidade
-        margin: 8, // Margem interna aumentada
-        scalable: true
-    });
-
-    // Estilização do SVG
-    const svg = qrcodeContainer.querySelector('svg');
-    svg.setAttribute('width', '100%');
-    svg.setAttribute('height', '100%');
-    svg.style.maxWidth = '300px';
-    svg.style.borderRadius = '15px';
-    svg.style.padding = '15px';
+        const qrContainer = document.getElementById('qr-code');
+        qrContainer.innerHTML = '';
+        
+        // Cria o QR code com nível de correção L (menor)
+        const qr = qrcode(0, 'L');
+        qr.addData(url);
+        qr.make();
+        
+        // Gera a imagem do QR code no tamanho selecionado
+        const size = parseInt(qrSizeSelect.value);
+        qrContainer.innerHTML = qr.createImgTag(Math.ceil(size / 33));
+    } catch (error) {
+        console.error('Erro ao gerar QR code:', error);
+        const qrContainer = document.getElementById('qr-code');
+        qrContainer.innerHTML = '<p class="error">Erro ao gerar QR code. Por favor, recarregue a página.</p>';
+    }
 }
 
-// Copia o link para a área de transferência
+// Função para copiar o link para a área de transferência
 copyBtn.addEventListener('click', async () => {
     try {
         await navigator.clipboard.writeText(generatedLinkInput.value);
@@ -111,78 +101,84 @@ copyBtn.addEventListener('click', async () => {
             copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copiar';
         }, 2000);
     } catch (err) {
-        alert('Falha ao copiar o link');
+        console.error('Erro ao copiar:', err);
+        alert('Falha ao copiar o link. Por favor, copie manualmente.');
     }
 });
 
-// Função para download do QR Code (corrigido para PNG)
+// Função para gerar um novo link
+newLinkBtn.addEventListener('click', () => {
+    try {
+        // Limpa os campos e volta para a tela inicial
+        phoneInput.value = '';
+        messageInput.value = '';
+        resultScreen.classList.add('hidden');
+        generatorScreen.classList.remove('hidden');
+    } catch (error) {
+        console.error('Erro ao resetar formulário:', error);
+    }
+});
+
+// Função para baixar o QR code
 function downloadQRCode(format) {
-    const svg = document.querySelector('#qrcode svg');
-    const size = parseInt(qrSizeSelect.value);
-    
-    if (format === 'svg') {
-        // Download em formato SVG
-        const svgData = new XMLSerializer().serializeToString(svg);
-        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(svgBlob);
-        link.download = 'whatsapp-qr.svg';
-        link.click();
-    } else {
-        // Download em formato PNG
+    try {
+        const qrImg = document.querySelector('#qr-code img');
+        if (!qrImg) {
+            throw new Error('Imagem QR code não encontrada');
+        }
+
+        const size = parseInt(qrSizeSelect.value);
+        
+        // Cria um canvas para manipular a imagem
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        const img = new Image();
-        
         canvas.width = size;
         canvas.height = size;
         
-        img.onload = () => {
-            // Preenchimento da imagem com fundo branco
-            ctx.fillStyle = '#FFFFFF';  // Cor de fundo
-            ctx.fillRect(0, 0, size, size);  // Preenche toda a área do canvas
-
-            // Ajuste para bordas arredondadas
-            const radius = 15;  // Raio para bordas arredondadas
-            ctx.beginPath();
-            ctx.moveTo(radius, 0);
-            ctx.lineTo(size - radius, 0);
-            ctx.quadraticCurveTo(size, 0, size, radius);
-            ctx.lineTo(size, size - radius);
-            ctx.quadraticCurveTo(size, size, size - radius, size);
-            ctx.lineTo(radius, size);
-            ctx.quadraticCurveTo(0, size, 0, size - radius);
-            ctx.lineTo(0, radius);
-            ctx.quadraticCurveTo(0, 0, radius, 0);
-            ctx.closePath();
-            ctx.clip();  // Aplica o recorte arredondado na imagem
-
-            // Desenha a imagem do QR Code no canvas
-            ctx.drawImage(img, 0, 0, size, size);
-            
-            const link = document.createElement('a');
+        // Desenha o fundo branco
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Desenha o QR code
+        ctx.drawImage(qrImg, 0, 0, size, size);
+        
+        // Cria o link de download
+        const link = document.createElement('a');
+        if (format === 'png') {
             link.download = 'whatsapp-qr.png';
             link.href = canvas.toDataURL('image/png');
-            link.click();
-        };
+        } else {
+            // Converte para SVG
+            const svgString = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
+                    <image href="${canvas.toDataURL('image/png')}" width="${size}" height="${size}"/>
+                </svg>
+            `;
+            const blob = new Blob([svgString], { type: 'image/svg+xml' });
+            link.download = 'whatsapp-qr.svg';
+            link.href = URL.createObjectURL(blob);
+        }
         
-        img.src = 'data:image/svg+xml;base64,' + btoa(new XMLSerializer().serializeToString(svg));
+        // Inicia o download
+        link.click();
+    } catch (error) {
+        console.error('Erro ao baixar QR code:', error);
+        alert('Erro ao baixar o QR code. Por favor, tente novamente.');
     }
 }
 
-// Event listeners para download
+// Eventos para download do QR code
 downloadPngBtn.addEventListener('click', () => downloadQRCode('png'));
 downloadSvgBtn.addEventListener('click', () => downloadQRCode('svg'));
 
 // Atualiza o QR code quando o tamanho é alterado
 qrSizeSelect.addEventListener('change', () => {
-    generateQRCode(generatedLinkInput.value);
+    if (generatedLinkInput.value) {
+        generateQRCode(generatedLinkInput.value);
+    }
 });
 
-// Gera novo link
-newLinkBtn.addEventListener('click', () => {
-    phoneInput.value = '';
-    messageInput.value = '';
-    resultScreen.classList.add('hidden');
-    generatorScreen.classList.remove('hidden');
+// Navegação mobile
+navbarToggle.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
 });
