@@ -190,6 +190,7 @@ textarea:focus {
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 10px 10px 10px 10px;
 }
 
 #qrcode svg {
