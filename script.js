@@ -19,10 +19,10 @@ phoneInput.addEventListener('keypress', (e) => {
     if (!/\d/.test(e.key)) {
         e.preventDefault();
     }
-    
+
     // Obtém o valor atual sem caracteres não numéricos
     const currentValue = e.target.value.replace(/\D/g, '');
-    
+
     // Impede a entrada se exceder 11 dígitos
     if (currentValue.length >= 11 && e.key !== 'Backspace' && e.key !== 'Delete') {
         e.preventDefault();
@@ -32,10 +32,10 @@ phoneInput.addEventListener('keypress', (e) => {
 phoneInput.addEventListener('input', (e) => {
     // Remove caracteres não numéricos
     let value = e.target.value.replace(/\D/g, '');
-    
+
     // Limita a 11 dígitos
     value = value.slice(0, 11);
-    
+
     // Formata o número
     let formattedValue = '';
     if (value.length > 0) {
@@ -47,7 +47,7 @@ phoneInput.addEventListener('input', (e) => {
             }
         }
     }
-    
+
     e.target.value = formattedValue;
 });
 
@@ -97,16 +97,18 @@ function generateQRCode(text) {
     const svg = qrcodeContainer.querySelector('svg');
     svg.setAttribute('width', '100%');
     svg.setAttribute('height', '100%');
-    
-    // Ajuste para garantir que o QR code não fique cortado e tenha preenchimento adequado
-    svg.style.maxWidth = '300px';
-    svg.style.borderRadius = '15px';
-    svg.style.padding = '20px'; // Preenchimento uniforme (aplicado ao redor da imagem)
 
-    // Adicionando a cor de fundo e bordas arredondadas na imagem do QR code
-    svg.style.backgroundColor = '#FFFFFF';  // Fundo branco para a imagem
-    svg.style.borderRadius = '15px';  // Borda arredondada
-    svg.style.padding = '20px';  // Preenchimento uniforme (aplicado ao redor da imagem)
+    // Ajuste para garantir que o QR code tenha o preenchimento correto
+    svg.style.maxWidth = '300px'; // Limita o tamanho máximo do QR code
+    svg.style.borderRadius = '15px'; // Bordas arredondadas
+    svg.style.padding = '20px'; // Preenchimento uniforme aplicado ao redor da imagem
+    svg.style.backgroundColor = '#FFFFFF';  // Cor de fundo branco
+    svg.style.boxSizing = 'border-box';  // Garantir que o preenchimento e a borda sejam incluídos nas dimensões totais
+
+    // Garantir que o container do QR code tenha padding e border radius
+    qrcodeContainer.style.padding = '20px';  // Preenchimento extra para o container
+    qrcodeContainer.style.borderRadius = '15px';  // Bordas arredondadas do container
+    qrcodeContainer.style.backgroundColor = '#FFFFFF';  // Cor de fundo para o container
 }
 
 // Copia o link para a área de transferência
@@ -126,7 +128,7 @@ copyBtn.addEventListener('click', async () => {
 function downloadQRCode(format) {
     const svg = document.querySelector('#qrcode svg');
     const size = parseInt(qrSizeSelect.value);
-    
+
     if (format === 'svg') {
         // Download em formato SVG
         const svgData = new XMLSerializer().serializeToString(svg);
@@ -140,21 +142,21 @@ function downloadQRCode(format) {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         const img = new Image();
-        
+
         canvas.width = size;
         canvas.height = size;
-        
+
         img.onload = () => {
             ctx.fillStyle = '#FFFFFF';
             ctx.fillRect(0, 0, size, size);
             ctx.drawImage(img, 0, 0, size, size);
-            
+
             const link = document.createElement('a');
             link.download = 'whatsapp-qr.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
         };
-        
+
         img.src = 'data:image/svg+xml;base64,' + btoa(new XMLSerializer().serializeToString(svg));
     }
 }
@@ -175,3 +177,4 @@ newLinkBtn.addEventListener('click', () => {
     resultScreen.classList.add('hidden');
     generatorScreen.classList.remove('hidden');
 });
+
