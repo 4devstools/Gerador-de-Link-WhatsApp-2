@@ -1,22 +1,23 @@
-<!-- Estrutura básica do documento HTML -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <!-- Meta tags básicas -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de Link WhatsApp</title>
-    <!-- Estilos CSS -->
     <link rel="stylesheet" href="style.css">
-    <!-- Biblioteca QR Code -->
+    <!-- Biblioteca para geração de QR Code -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
-    <!-- Ícones Font Awesome -->
+    <!-- Biblioteca de ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
     <!-- Barra de navegação -->
     <nav class="navbar">
-        <a href="https://codedevtools.com" class="logo">CodeDevTools</a>
-        <button class="navbar-toggle" aria-label="Menu">
+        <a href="https://codedevtools.com" class="logo-link">
+            <div class="logo">CodeDevTools</div>
+        </a>
+        <button class="navbar-toggle">
             <i class="fas fa-bars"></i>
         </button>
         <ul class="nav-links">
@@ -29,12 +30,12 @@
 
     <!-- Conteúdo principal -->
     <main>
-        <!-- Tela do gerador -->
+        <!-- Tela de geração do link -->
         <div class="container" id="generator-screen">
             <h1>Gerador de Link WhatsApp</h1>
             <div class="input-group">
                 <label for="phone">Número de Telefone *</label>
-                <input type="tel" id="phone" placeholder="(XX) XXXXX-XXXX" maxlength="15" required>
+                <input type="text" id="phone" placeholder="(XX) XXXXX-XXXX" required>
             </div>
             <div class="input-group">
                 <label for="message">Mensagem (Opcional)</label>
@@ -46,18 +47,17 @@
         <!-- Tela de resultado -->
         <div class="container hidden" id="result-screen">
             <h1>Link Gerado</h1>
-            <!-- Grupo do link gerado -->
             <div class="result-group">
-                <input type="text" id="generated-link" readonly>
-                <button id="copy-btn" class="secondary-btn">
-                    <i class="fas fa-copy"></i> Copiar
-                </button>
+                <div class="link-container">
+                    <input type="text" id="generated-link" readonly>
+                    <button id="copy-btn" class="secondary-btn">
+                        <i class="fas fa-copy"></i> Copiar
+                    </button>
+                </div>
             </div>
 
-            <!-- Container do QR Code -->
             <div class="qr-container">
-                <div id="qrcode"></div>
-                <!-- Opções de download -->
+                <div id="qr-code"></div>
                 <div class="download-options">
                     <select id="qr-size">
                         <option value="500">500px</option>
@@ -81,7 +81,7 @@
     <!-- Rodapé -->
     <footer>
         <div class="footer-content">
-            <p>Desenvolvido e criado por <a href="https://codedevtools.com" class="brand-link">CodeDevTools</a></p>
+            <p>Desenvolvido e criado por <a href="https://codedevtools.com" class="footer-brand">CodeDevTools</a></p>
             <div class="footer-links">
                 <a href="#">Ajuda</a>
                 <a href="#">Contato</a>
@@ -96,7 +96,6 @@
         </div>
     </footer>
 
-    <!-- Scripts JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>
