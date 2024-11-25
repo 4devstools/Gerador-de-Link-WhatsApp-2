@@ -19,10 +19,10 @@ phoneInput.addEventListener('keypress', (e) => {
     if (!/\d/.test(e.key)) {
         e.preventDefault();
     }
-
+    
     // Obtém o valor atual sem caracteres não numéricos
     const currentValue = e.target.value.replace(/\D/g, '');
-
+    
     // Impede a entrada se exceder 11 dígitos
     if (currentValue.length >= 11 && e.key !== 'Backspace' && e.key !== 'Delete') {
         e.preventDefault();
@@ -32,10 +32,10 @@ phoneInput.addEventListener('keypress', (e) => {
 phoneInput.addEventListener('input', (e) => {
     // Remove caracteres não numéricos
     let value = e.target.value.replace(/\D/g, '');
-
+    
     // Limita a 11 dígitos
     value = value.slice(0, 11);
-
+    
     // Formata o número
     let formattedValue = '';
     if (value.length > 0) {
@@ -47,7 +47,7 @@ phoneInput.addEventListener('input', (e) => {
             }
         }
     }
-
+    
     e.target.value = formattedValue;
 });
 
@@ -97,18 +97,9 @@ function generateQRCode(text) {
     const svg = qrcodeContainer.querySelector('svg');
     svg.setAttribute('width', '100%');
     svg.setAttribute('height', '100%');
-
-    // Ajuste para garantir que o QR code tenha o preenchimento correto
-    svg.style.maxWidth = '300px'; // Limita o tamanho máximo do QR code
-    svg.style.borderRadius = '15px'; // Bordas arredondadas
-    svg.style.padding = '20px'; // Preenchimento uniforme aplicado ao redor da imagem
-    svg.style.backgroundColor = '#FFFFFF';  // Cor de fundo branco
-    svg.style.boxSizing = 'border-box';  // Garantir que o preenchimento e a borda sejam incluídos nas dimensões totais
-
-    // Garantir que o container do QR code tenha padding e border radius
-    qrcodeContainer.style.padding = '20px';  // Preenchimento extra para o container
-    qrcodeContainer.style.borderRadius = '15px';  // Bordas arredondadas do container
-    qrcodeContainer.style.backgroundColor = '#FFFFFF';  // Cor de fundo para o container
+    svg.style.maxWidth = '300px';
+    svg.style.borderRadius = '15px';
+    svg.style.padding = '15px';
 }
 
 // Copia o link para a área de transferência
@@ -124,11 +115,11 @@ copyBtn.addEventListener('click', async () => {
     }
 });
 
-// Download do QR code
+// Função para download do QR Code (corrigido para PNG)
 function downloadQRCode(format) {
     const svg = document.querySelector('#qrcode svg');
     const size = parseInt(qrSizeSelect.value);
-
+    
     if (format === 'svg') {
         // Download em formato SVG
         const svgData = new XMLSerializer().serializeToString(svg);
@@ -142,21 +133,39 @@ function downloadQRCode(format) {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         const img = new Image();
-
+        
         canvas.width = size;
         canvas.height = size;
-
+        
         img.onload = () => {
-            ctx.fillStyle = '#FFFFFF';
-            ctx.fillRect(0, 0, size, size);
-            ctx.drawImage(img, 0, 0, size, size);
+            // Preenchimento da imagem com fundo branco
+            ctx.fillStyle = '#FFFFFF';  // Cor de fundo
+            ctx.fillRect(0, 0, size, size);  // Preenche toda a área do canvas
 
+            // Ajuste para bordas arredondadas
+            const radius = 15;  // Raio para bordas arredondadas
+            ctx.beginPath();
+            ctx.moveTo(radius, 0);
+            ctx.lineTo(size - radius, 0);
+            ctx.quadraticCurveTo(size, 0, size, radius);
+            ctx.lineTo(size, size - radius);
+            ctx.quadraticCurveTo(size, size, size - radius, size);
+            ctx.lineTo(radius, size);
+            ctx.quadraticCurveTo(0, size, 0, size - radius);
+            ctx.lineTo(0, radius);
+            ctx.quadraticCurveTo(0, 0, radius, 0);
+            ctx.closePath();
+            ctx.clip();  // Aplica o recorte arredondado na imagem
+
+            // Desenha a imagem do QR Code no canvas
+            ctx.drawImage(img, 0, 0, size, size);
+            
             const link = document.createElement('a');
             link.download = 'whatsapp-qr.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
         };
-
+        
         img.src = 'data:image/svg+xml;base64,' + btoa(new XMLSerializer().serializeToString(svg));
     }
 }
@@ -177,4 +186,3 @@ newLinkBtn.addEventListener('click', () => {
     resultScreen.classList.add('hidden');
     generatorScreen.classList.remove('hidden');
 });
-
