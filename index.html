@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <!-- Meta tags básicas -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Link WhatsApp</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Biblioteca para geração de QR Code -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <!-- Biblioteca de ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <!-- Barra de navegação -->
+    <nav class="navbar">
+        <a href="https://codedevtools.com" class="logo-link">
+            <div class="logo">CodeDevTools</div>
+        </a>
+        <button class="navbar-toggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <ul class="nav-links">
+            <li><a href="#" class="active">Início</a></li>
+            <li><a href="#">Ajuda</a></li>
+            <li><a href="#">Contato</a></li>
+            <li><a href="#">Sobre</a></li>
+        </ul>
+    </nav>
+
+    <!-- Conteúdo principal -->
+    <main>
+        <!-- Tela de geração do link -->
+        <div class="container" id="generator-screen">
+            <h1>Gerador de Link WhatsApp</h1>
+            <div class="input-group">
+                <label for="phone">Número de Telefone *</label>
+                <input type="text" id="phone" placeholder="(XX) XXXXX-XXXX" required>
+            </div>
+            <div class="input-group">
+                <label for="message">Mensagem (Opcional)</label>
+                <textarea id="message" rows="4" placeholder="Digite sua mensagem aqui..."></textarea>
+            </div>
+            <button id="generate-btn" class="primary-btn">Gerar Link</button>
+        </div>
+
+        <!-- Tela de resultado -->
+        <div class="container hidden" id="result-screen">
+            <h1>Link Gerado</h1>
+            <div class="result-group">
+                <div class="link-container">
+                    <input type="text" id="generated-link" readonly>
+                    <button id="copy-btn" class="secondary-btn">
+                        <i class="fas fa-copy"></i> Copiar
+                    </button>
+                </div>
+            </div>
+
+            <div class="qr-container">
+                <div id="qr-code"></div>
+                <div class="download-options">
+                    <select id="qr-size">
+                        <option value="500">500px</option>
+                        <option value="800">800px</option>
+                        <option value="1080">1080px</option>
+                        <option value="2000">2000px</option>
+                    </select>
+                    <button id="download-png" class="secondary-btn">
+                        <i class="fas fa-download"></i> PNG
+                    </button>
+                    <button id="download-svg" class="secondary-btn">
+                        <i class="fas fa-download"></i> SVG
+                    </button>
+                </div>
+            </div>
+
+            <button id="new-link-btn" class="primary-btn">Gerar Novo Link</button>
+        </div>
+    </main>
+
+    <!-- Rodapé -->
+    <footer>
+        <div class="footer-content">
+            <p>Desenvolvido e criado por <a href="https://codedevtools.com" class="footer-brand">CodeDevTools</a></p>
+            <div class="footer-links">
+                <a href="#">Ajuda</a>
+                <a href="#">Contato</a>
+                <a href="#">Sobre</a>
+            </div>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-github"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
