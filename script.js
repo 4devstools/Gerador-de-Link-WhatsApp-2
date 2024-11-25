@@ -97,9 +97,16 @@ function generateQRCode(text) {
     const svg = qrcodeContainer.querySelector('svg');
     svg.setAttribute('width', '100%');
     svg.setAttribute('height', '100%');
+    
+    // Ajuste para garantir que o QR code não fique cortado e tenha preenchimento adequado
     svg.style.maxWidth = '300px';
     svg.style.borderRadius = '15px';
-    svg.style.padding = '15px';
+    svg.style.padding = '20px'; // Preenchimento uniforme (aplicado ao redor da imagem)
+
+    // Adicionando a cor de fundo e bordas arredondadas na imagem do QR code
+    svg.style.backgroundColor = '#FFFFFF';  // Fundo branco para a imagem
+    svg.style.borderRadius = '15px';  // Borda arredondada
+    svg.style.padding = '20px';  // Preenchimento uniforme (aplicado ao redor da imagem)
 }
 
 // Copia o link para a área de transferência
